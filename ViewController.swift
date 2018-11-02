@@ -19,12 +19,14 @@ class ViewController: UIViewController {
     
     var value1: Double = 0.0
     var value2: Double = 0.0
+    var valueT: Double = 0.0
     var result: Double = 0.0
     var operatorFlag: String = ""
     var isDecimalPoint: Bool = false
     var isValue2: Bool = false
     var isOperator: Bool = false
     var isResult: Bool = false
+    var error: Bool = false
     
     @IBAction func number(_ sender: UIButton) {
         if (screenL.text == "0" && isDecimalPoint == false)
@@ -69,6 +71,13 @@ class ViewController: UIViewController {
             }
             screenL.text = "\(value1)"
             isValue2 = false
+            switch sender.currentTitle!{
+            case "+" : operatorFlag = "+"
+            case "-" : operatorFlag = "-"
+            case "×" : operatorFlag = "*"
+            case "÷" : operatorFlag = "/"
+            default : operatorFlag = ""
+            }
         }
     }
     
@@ -76,25 +85,36 @@ class ViewController: UIViewController {
         if isValue2 {
             value2 = NSString(string: screenL.text!).doubleValue
         }
-        if (operatorFlag == "/" && value2 == 0.0){
-            screenL.text = "Error: Divisor must not be zero."
-            operatorFlag = ""
-        }
+        
         switch operatorFlag {
         case "+" : result = value1 + value2
         case "-" : result = value1 - value2
         case "*" : result = value1 * value2
-        case "/" : result = value1 / value2
+        case "/" :if (operatorFlag == "/" && value2 == 0.0){
+                      error = true
+                      value1 = 0.0
+                      value2 = 0.0
+                      result = 0.0
+                      operatorFlag = ""
+                      isDecimalPoint = false
+                      isValue2 = false
+                      isOperator = false
+                      isResult = false}
+                  else{result = value1 / value2}
         default : break
         }
         isResult = true
         isValue2 = false
-        screenL.text = "\(result)"
+        if(!error){screenL.text = "\(result)"}
+        else{screenL.text = "Error: Divisor must not be zero."}
     }
     
     @IBAction func persentSign(_ sender: UIButton) {
-        
+        valueT = NSString(string: screenL.text!).doubleValue
+        valueT = 0.01 * valueT
+        screenL.text = "\(valueT)"
     }
+    
     @IBAction func allClear(_ sender: UIButton) {
         value1 = 0.0
         value2 = 0.0
@@ -104,6 +124,7 @@ class ViewController: UIViewController {
         isValue2 = false
         isOperator = false
         isResult = false
-        screenL.text = "0"    }
+        screenL.text = "0"
+        error = false}
 }
 
